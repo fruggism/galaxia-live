@@ -105,7 +105,9 @@ function renderLinks(cfg) {
   if (!links.length) { host.classList.add('hidden'); return; }
   host.classList.remove('hidden');
   host.innerHTML = links.map((l) => (
-    `<a class="btn btn-link" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.label || l.url)}</a>`
+    l.url
+      ? `<a class="btn btn-link" href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>`
+      : `<span class="btn btn-link disabled" title="Link non ancora impostato">${escapeHtml(l.label)}</span>`
   )).join('');
 }
 

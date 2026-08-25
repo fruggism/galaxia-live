@@ -220,22 +220,58 @@ function openBundle(raw) {
   renderLayerList();
 }
 
-async function load() {
+/** Il nome mostrato nel menu è il nome del file: rinominalo come vuoi
+ *  prima di caricarlo in data/atlante/, l'estensione e un eventuale
+ *  "_ATLAS"/"-ATLAS" finale (quello che l'Editor aggiunge da solo)
+ *  vengono tolti automaticamente. */
+function labelFromFilename(name) {
+  const base = name.replace(/\.camap\.json$/i, '').replace(/\.json$/i, '')
+    .replace(/[_-]?ATLAS$/i, '').replace(/[_-]+/g, ' ').trim();
+  return base || name;
+}
+
+let files = [];
+let selectedName = null;
+
+function renderAtlasList() {
+  const host = el('atlas-list');
+  if (!host) return;
+  host.innerHTML = files.map((f) => `
+    <li class="doc-item ${f.name === selectedName ? 'selected' : ''}" data-name="${escapeHtml(f.name)}">
+      <b>${escapeHtml(labelFromFilename(f.name))}</b>
+    </li>`).join('');
+  host.querySelectorAll('.doc-item').forEach((node) => {
+    node.addEventListener('click', () => openAtlas(node.dataset.name));
+  });
+}
+
+async function openAtlas(name) {
+  const file = files.find((f) => f.name === name);
+  if (!file) return;
+  selectedName = name;
+  renderAtlasList();
   try {
-    const files = await listJsonFiles(ATLAS_FOLDER);
-    if (!files.length) {
-      showEmpty('Nessun atlante caricato ancora: da Cube-Atlas Editor, esporta con "🗺️ Esporta atlante" e trascina il file in data/atlante/ di questo repository, con il nome che ha già.');
-      return;
-    }
-    // Se per sbaglio ce n'è più di uno, si usa il più recente per nome file
-    // (Cube-Atlas non li nomina con una data, quindi in pratica basta tenerne uno solo).
-    const chosen = files.slice().sort((a, b) => b.name.localeCompare(a.name))[0];
-    const raw = await fetchJson(chosen.download_url);
+    const raw = await fetchJson(file.download_url);
     if (!raw || raw.format !== READER_MAP_FORMAT) {
-      throw new Error(`"${chosen.name}" non è un atlante Cube-Atlas valido`);
+      throw new Error(`"${file.name}" non è un atlante Cube-Atlas valido`);
     }
     openBundle(raw);
-    setStatus('atlas-status', `"${chosen.name}" — aggiornato al ${new Date().toLocaleString('it-IT')}`, 'ok');
+    setStatus('atlas-status', `"${labelFromFilename(file.name)}" — aggiornato al ${new Date().toLocaleString('it-IT')}`, 'ok');
+  } catch (err) {
+    showEmpty(`Caricamento non riuscito: ${err.message}`);
+    setStatus('atlas-status', `Caricamento non riuscito: ${err.message}`, 'err');
+  }
+}
+
+async function load() {
+  try {
+    files = (await listJsonFiles(ATLAS_FOLDER)).sort((a, b) => labelFromFilename(a.name).localeCompare(labelFromFilename(b.name), 'it'));
+    renderAtlasList();
+    if (!files.length) {
+      showEmpty('Nessun atlante caricato ancora: da Cube-Atlas Editor, esporta con "🗺️ Esporta atlante" e trascina il file in data/atlante/ di questo repository — rinominalo come preferisci, sarà il nome mostrato qui.');
+      return;
+    }
+    await openAtlas(files[0].name);
   } catch (err) {
     showEmpty(`Caricamento non riuscito: ${err.message}`);
     setStatus('atlas-status', `Caricamento non riuscito: ${err.message}`, 'err');

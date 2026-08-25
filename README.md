@@ -16,20 +16,23 @@ atlante/index.html  Mappa (Lettore di Cube-Atlas, sempre attivo su data/atlante/
 archivio/index.html Documenti (elenco + lettura, da data/archivio/)
 data/
   server.json        Indirizzo del server e link utili (unico file, si modifica lui)
-  atlante/            Trascinaci l'atlante esportato da Cube-Atlas (un solo file)
+  atlante/            Un file per ogni atlante — selezionabili dal menu della pagina
   archivio/           Trascinaci i documenti esportati dall'Archivio (uno o più file)
   avvisi/             Un file per ogni avviso da mostrare in home
 ```
 
 ## Aggiornare l'atlante
 
+Puoi tenere **più di un atlante** in `data/atlante/` — uno per file — e
+sceglierlo dal menu a sinistra della pagina Atlante: il nome mostrato nel
+menu è il nome del file (tolti `.json`/`.camap.json` e un eventuale
+`_ATLAS`/`-ATLAS` finale, che l'Editor aggiunge da solo).
+
 1. Nell'Editor di Cube-Atlas, **🗺️ Esporta atlante**.
-2. Trascina il file scaricato in `data/atlante/` di questo repository,
-   con il nome che ha già (es. `MioMondo_ATLAS.json`).
-3. Pubblica (push, o upload FTP): la pagina Atlante lo pesca da sola al
-   prossimo caricamento — nessun altro passaggio. Se in `data/atlante/`
-   c'è più di un file, usa quello con il nome "più alto" in ordine
-   alfabetico: in pratica, tienicene uno solo.
+2. Rinomina il file come vuoi che appaia nel menu (es. `Imperor-Fruggis.json`).
+3. Trascinalo in `data/atlante/` di questo repository.
+4. Pubblica (push, o upload FTP): la pagina Atlante lo trova da sola al
+   prossimo caricamento, in fondo al menu.
 
 Finché `data/atlante/` è vuota, la pagina mostra semplicemente "nessun
 atlante ancora".
@@ -85,7 +88,10 @@ mostra online/offline, giocatori connessi, versione e MOTD. Con
 `"type": "bedrock"` interroga l'endpoint Bedrock invece di Java.
 `note` è testo libero mostrato sotto lo stato (regole, whitelist, versione
 richiesta, quello che vuoi). `links` è altrettanto libero: Discord, una
-guida per l'accesso, whitelist, ecc.
+guida per l'accesso, whitelist, ecc. — un link con `"url": ""` compare
+comunque nella card ma disattivato (grigio, non cliccabile), utile per
+tenere il posto finché non hai l'indirizzo: è già così per Discord e
+Google Drive.
 
 ## Codice riusato da Cube-Atlas
 

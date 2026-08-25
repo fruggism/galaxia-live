@@ -2,5 +2,8 @@
   "address": "37.74.104.218:25583",
   "type": "java",
   "note": "",
-  "links": []
+  "links": [
+    { "label": "💬 Discord", "url": "" },
+    { "label": "📁 Google Drive", "url": "" }
+  ]
 }
