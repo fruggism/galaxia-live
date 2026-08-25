@@ -1,0 +1,14 @@
+{
+  "name": "galaxia-live",
+  "version": "1.0.0",
+  "description": "Dashboard dell'impero Minecraft Galaxia: stato del server, avvisi, atlante e archivio di Cube-Atlas.",
+  "scripts": {
+    "serve": "node tools/serve.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fruggism/galaxia-live.git"
+  },
+  "license": "ISC",
+  "type": "module"
+}

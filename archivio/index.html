@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archivio — Galaxia Live</title>
+<meta name="theme-color" content="#2b2b2b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%236b4a2a'/%3E%3Crect width='16' height='6' fill='%235fa839'/%3E%3Crect y='6' width='16' height='2' fill='%234a7a2a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/textures.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/galaxia.css">
+</head>
+<body>
+
+<div id="app">
+  <header id="topbar">
+    <div class="logo"><span class="cube"></span><span>GALAXIA<b>-LIVE</b></span></div>
+    <nav class="tabs">
+      <a class="tab" href="../index.html">🏠 Home</a>
+      <a class="tab" href="../atlante/index.html">🗺️ Atlante</a>
+      <a class="tab active" href="index.html">📖 Archivio</a>
+    </nav>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-info" id="doc-status"></div>
+  </header>
+
+  <div class="screen active" id="screen-archive">
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>Documenti</h2>
+        <div class="hint">Da <code>data/archivio/</code>, elencati in <code>data/archivio/index.json</code> —
+          esporta dall'Archivio di Cube-Atlas con "📖 Esporta per il Lettore".</div>
+        <ul class="doc-list" id="doc-list"><li class="hint">Caricamento…</li></ul>
+      </section>
+    </aside>
+
+    <main class="reader-main">
+      <div class="reader-empty" id="doc-empty">
+        <h3>Archivio</h3>
+        <p>Scegli un documento dall'elenco a sinistra.</p>
+      </div>
+
+      <div class="reader-doc-view hidden" id="doc-view">
+        <h3 class="book-title" id="doc-title"></h3>
+        <p class="book-author" id="doc-author"></p>
+        <div id="doc-pages"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-host"></div>
+<div id="modal-host"></div>
+
+<script type="module" src="../js/archive-viewer.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlante — Galaxia Live</title>
+<meta name="theme-color" content="#2b2b2b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%236b4a2a'/%3E%3Crect width='16' height='6' fill='%235fa839'/%3E%3Crect y='6' width='16' height='2' fill='%234a7a2a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../vendor/leaflet.css">
+<link rel="stylesheet" href="../css/textures.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/galaxia.css">
+</head>
+<body>
+
+<div id="app">
+  <header id="topbar">
+    <div class="logo"><span class="cube"></span><span>GALAXIA<b>-LIVE</b></span></div>
+    <nav class="tabs">
+      <a class="tab" href="../index.html">🏠 Home</a>
+      <a class="tab active" href="index.html">🗺️ Atlante</a>
+      <a class="tab" href="../archivio/index.html">📖 Archivio</a>
+    </nav>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-info" id="atlas-status"></div>
+  </header>
+
+  <div class="screen active" id="screen-atlas">
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>Atlante</h2>
+        <div class="hint">Caricato automaticamente da <code>data/atlas.json</code> — riesporta dall'Editor
+          di Cube-Atlas e sostituisci quel file per aggiornarlo.</div>
+        <button class="btn" id="btn-atlas-reload">↻ Ricarica</button>
+      </section>
+
+      <section class="panel hidden" id="map-layers-panel">
+        <h2>Layer</h2>
+        <div class="hint">Nascondi o mostra i layer di questa mappa.</div>
+        <ul class="layer-list" id="atlas-layer-list"></ul>
+      </section>
+    </aside>
+
+    <main class="reader-main">
+      <div class="reader-empty" id="map-empty">
+        <h3>Atlante</h3>
+        <p id="map-empty-msg">Caricamento…</p>
+      </div>
+
+      <div class="reader-map-view hidden" id="map-view">
+        <div id="reader-map"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-host"></div>
+<div id="modal-host"></div>
+
+<script src="../vendor/leaflet.js"></script>
+<script type="module" src="../js/atlas-viewer.js"></script>
+</body>
+</html>

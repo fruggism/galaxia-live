@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxia Live</title>
+<meta name="description" content="Dashboard dell'impero Minecraft Galaxia: stato del server, avvisi, atlante e archivio di Cube-Atlas.">
+<meta name="theme-color" content="#2b2b2b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%236b4a2a'/%3E%3Crect width='16' height='6' fill='%235fa839'/%3E%3Crect y='6' width='16' height='2' fill='%234a7a2a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/textures.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/galaxia.css">
+</head>
+<body>
+
+<div id="app" class="galaxia">
+  <header id="topbar">
+    <div class="logo"><span class="cube"></span><span>GALAXIA<b>-LIVE</b></span></div>
+    <nav class="tabs">
+      <a class="tab active" href="index.html">🏠 Home</a>
+      <a class="tab" href="atlante/index.html">🗺️ Atlante</a>
+      <a class="tab" href="archivio/index.html">📖 Archivio</a>
+    </nav>
+    <div class="topbar-spacer"></div>
+    <a class="topbar-info" href="https://github.com/fruggism/FruCraft" target="_blank" rel="noopener">Cube-Atlas ↗</a>
+  </header>
+
+  <main class="galaxia-main">
+    <section class="hero">
+      <h1>Benvenuti a Galaxia</h1>
+      <p>Lo stato del server, gli avvisi dell'impero e la mappa del mondo, tutto in un posto.</p>
+    </section>
+
+    <div class="grid">
+      <section class="card" id="server-panel">
+        <h2>🖥️ Server</h2>
+        <div id="server-card"><div class="hint">Caricamento…</div></div>
+        <div id="server-links" class="server-links hidden"></div>
+      </section>
+
+      <section class="card">
+        <h2>📢 Avvisi</h2>
+        <ul id="avvisi-list" class="avvisi-list"><li class="hint">Caricamento…</li></ul>
+      </section>
+    </div>
+
+    <section>
+      <div class="nav-grid">
+        <a class="nav-card" href="atlante/index.html">
+          <span class="ico">🗺️</span>
+          <b>Atlante</b>
+          <small>La mappa del mondo, sempre aggiornata all'ultima esportazione</small>
+        </a>
+        <a class="nav-card" href="archivio/index.html">
+          <span class="ico">📖</span>
+          <b>Archivio</b>
+          <small>I documenti scritti dell'impero</small>
+        </a>
+        <a class="nav-card" href="https://github.com/fruggism/FruCraft" target="_blank" rel="noopener">
+          <span class="ico">⛏️</span>
+          <b>Cube-Atlas</b>
+          <small>Il progetto che genera atlante e archivio, apri il sito ↗</small>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="galaxia-foot">Galaxia Live · fatto con <a href="https://github.com/fruggism/FruCraft" target="_blank" rel="noopener">Cube-Atlas</a></footer>
+</div>
+
+<script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
