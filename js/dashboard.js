@@ -4,7 +4,11 @@
  * Lo stato del server non richiede nessun backend: mcsrvstat.us fa il ping
  * al server Minecraft e risponde via un'API pubblica con CORS abilitato.
  * Finché data/server.json non ha un indirizzo, la card resta un placeholder.
+ * Gli avvisi vengono letti da data/avvisi/: un file per avviso, con il nome
+ * che ha già — niente elenco da tenere aggiornato a mano.
  */
+
+import { listJsonFiles, fetchJson } from './github-folder.js';
 
 const el = (id) => document.getElementById(id);
 const escapeHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
@@ -24,14 +28,15 @@ async function loadServerInfo() {
     renderServerCard({ configured: false });
     return;
   }
-  renderServerCard({ configured: true, address: cfg.address, loading: true });
+  const base = { configured: true, address: cfg.address, note: cfg.note || '' };
+  renderServerCard({ ...base, loading: true });
   try {
     const kind = cfg.type === 'bedrock' ? 'bedrock' : 'java';
     const res = await fetch(`https://api.mcsrvstat.us/3/${kind === 'bedrock' ? 'bedrock/' : ''}${encodeURIComponent(cfg.address)}`);
     const data = await res.json();
-    renderServerCard({ configured: true, address: cfg.address, ...data });
+    renderServerCard({ ...base, ...data });
   } catch (err) {
-    renderServerCard({ configured: true, address: cfg.address, error: err.message });
+    renderServerCard({ ...base, error: err.message });
   }
 }
 
@@ -48,8 +53,9 @@ function renderServerCard(s) {
         online/offline, giocatori connessi e versione.</p>`;
     return;
   }
+  const noteHtml = s.note ? `<p class="server-note">${escapeHtml(s.note)}</p>` : '';
   if (s.loading) {
-    host.innerHTML = `<div class="server-status unknown"><span class="dot"></span><span>Controllo in corso…</span></div>`;
+    host.innerHTML = `<div class="server-status unknown"><span class="dot"></span><span>Controllo in corso…</span></div>${noteHtml}`;
     return;
   }
   if (s.error || s.online === undefined) {
@@ -58,7 +64,7 @@ function renderServerCard(s) {
         <span class="dot"></span>
         <span>Stato non disponibile${s.error ? ` (${escapeHtml(s.error)})` : ''}</span>
       </div>
-      <p class="hint">Indirizzo: <code>${escapeHtml(s.address)}</code></p>`;
+      <p class="hint">Indirizzo: <code>${escapeHtml(s.address)}</code></p>${noteHtml}`;
     return;
   }
   const players = s.players || {};
@@ -79,7 +85,8 @@ function renderServerCard(s) {
       ${players.list && players.list.length ? `
         <div class="player-list">${players.list.map((p) => `<span class="player-chip">${escapeHtml(p.name || p)}</span>`).join('')}</div>
       ` : ''}
-    ` : `<p class="hint">Il server non risponde in questo momento.</p>`}`;
+    ` : `<p class="hint">Il server non risponde in questo momento.</p>`}
+    ${noteHtml}`;
 
   const addrNode = host.querySelector('.server-address');
   if (addrNode) {
@@ -106,9 +113,21 @@ async function loadAvvisi() {
   const host = el('avvisi-list');
   let avvisi = [];
   try {
-    const res = await fetch(`data/avvisi.json?t=${Date.now()}`, { cache: 'no-store' });
-    if (res.ok) avvisi = await res.json();
-    if (!Array.isArray(avvisi)) avvisi = [];
+    const files = await listJsonFiles('data/avvisi');
+    const results = await Promise.all(files.map(async (f) => {
+      try {
+        const raw = await fetchJson(f.download_url);
+        return {
+          title: typeof raw.title === 'string' ? raw.title : f.name,
+          date: typeof raw.date === 'string' ? raw.date : '',
+          body: typeof raw.body === 'string' ? raw.body : '',
+          pinned: raw.pinned === true,
+        };
+      } catch {
+        return null; // un file scritto male non deve far sparire gli altri
+      }
+    }));
+    avvisi = results.filter(Boolean);
   } catch { avvisi = []; }
 
   if (!avvisi.length) {

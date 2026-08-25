@@ -10,9 +10,10 @@
 
 import { el, escapeHtml, setStatus, toLatLng } from './vendor/ui-core.js';
 import * as Atlas from './vendor/atlas.js';
+import { listJsonFiles, fetchJson } from './github-folder.js';
 
 const READER_MAP_FORMAT = Atlas.READER_MAP_FORMAT || 'cube-atlas/map';
-const ATLAS_URL = '../data/atlas.json';
+const ATLAS_FOLDER = 'data/atlante';
 
 let map = null;
 let layers = [];
@@ -221,18 +222,20 @@ function openBundle(raw) {
 
 async function load() {
   try {
-    const res = await fetch(`${ATLAS_URL}?t=${Date.now()}`, { cache: 'no-store' });
-    if (res.status === 404) {
-      showEmpty('Nessun atlante caricato ancora: da Cube-Atlas Editor, esporta con "🗺️ Esporta atlante" e salva il file come data/atlas.json in questo repository.');
+    const files = await listJsonFiles(ATLAS_FOLDER);
+    if (!files.length) {
+      showEmpty('Nessun atlante caricato ancora: da Cube-Atlas Editor, esporta con "🗺️ Esporta atlante" e trascina il file in data/atlante/ di questo repository, con il nome che ha già.');
       return;
     }
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw = await res.json();
+    // Se per sbaglio ce n'è più di uno, si usa il più recente per nome file
+    // (Cube-Atlas non li nomina con una data, quindi in pratica basta tenerne uno solo).
+    const chosen = files.slice().sort((a, b) => b.name.localeCompare(a.name))[0];
+    const raw = await fetchJson(chosen.download_url);
     if (!raw || raw.format !== READER_MAP_FORMAT) {
-      throw new Error('Il file data/atlas.json non è un atlante Cube-Atlas valido');
+      throw new Error(`"${chosen.name}" non è un atlante Cube-Atlas valido`);
     }
     openBundle(raw);
-    setStatus('atlas-status', `Atlante aggiornato al ${new Date().toLocaleString('it-IT')}`, 'ok');
+    setStatus('atlas-status', `"${chosen.name}" — aggiornato al ${new Date().toLocaleString('it-IT')}`, 'ok');
   } catch (err) {
     showEmpty(`Caricamento non riuscito: ${err.message}`);
     setStatus('atlas-status', `Caricamento non riuscito: ${err.message}`, 'err');

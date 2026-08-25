@@ -3,56 +3,65 @@
 Dashboard dell'impero Minecraft **Galaxia**: stato del server, avvisi,
 l'atlante e l'archivio generati da [Cube-Atlas](https://github.com/fruggism/FruCraft).
 
-**Sito interamente statico.** Nessun backend: le pagine leggono file JSON
-nella cartella `data/`, aggiornarle vuol dire sostituire quei file e
-ripubblicare (o caricarli via FTP, a seconda di come hai collegato il
-repository a passim.it).
+**Sito interamente statico.** Nessun backend: le tre pagine leggono
+direttamente il contenuto delle cartelle di `data/` tramite l'API pubblica
+di GitHub — **basta trascinarci dentro il file così come lo hai salvato**,
+con il suo nome originale. Niente elenchi da editare a mano.
 
 ## Struttura
 
 ```
 index.html          Home — stato server + avvisi
-atlante/index.html  Mappa (Lettore di Cube-Atlas, sempre attivo su data/atlas.json)
+atlante/index.html  Mappa (Lettore di Cube-Atlas, sempre attivo su data/atlante/)
 archivio/index.html Documenti (elenco + lettura, da data/archivio/)
 data/
-  server.json        Indirizzo del server e link utili
-  avvisi.json         Elenco avvisi mostrati in home
-  atlas.json           L'atlante esportato da Cube-Atlas (non versionato finché non esiste)
-  archivio/
-    index.json         Elenco dei documenti (titolo, autore, nome file)
-    *.json             I documenti stessi, esportati dall'Archivio di Cube-Atlas
+  server.json        Indirizzo del server e link utili (unico file, si modifica lui)
+  atlante/            Trascinaci l'atlante esportato da Cube-Atlas (un solo file)
+  archivio/           Trascinaci i documenti esportati dall'Archivio (uno o più file)
+  avvisi/             Un file per ogni avviso da mostrare in home
 ```
 
 ## Aggiornare l'atlante
 
 1. Nell'Editor di Cube-Atlas, **🗺️ Esporta atlante**.
-2. Rinomina il file scaricato in `atlas.json` e sostituisci
-   `data/atlas.json` in questo repository.
+2. Trascina il file scaricato in `data/atlante/` di questo repository,
+   con il nome che ha già (es. `MioMondo_ATLAS.json`).
 3. Pubblica (push, o upload FTP): la pagina Atlante lo pesca da sola al
-   prossimo caricamento — nessun altro passaggio.
+   prossimo caricamento — nessun altro passaggio. Se in `data/atlante/`
+   c'è più di un file, usa quello con il nome "più alto" in ordine
+   alfabetico: in pratica, tienicene uno solo.
 
-Finché `data/atlas.json` non esiste, la pagina mostra semplicemente "nessun
+Finché `data/atlante/` è vuota, la pagina mostra semplicemente "nessun
 atlante ancora".
 
 ## Aggiornare l'archivio
 
 1. Nell'Archivio di Cube-Atlas, **📖 Esporta per il Lettore** sul documento
    che vuoi pubblicare.
-2. Salva il file in `data/archivio/` (es. `data/archivio/storia-di-galaxia.json`).
-3. Aggiungi una riga in `data/archivio/index.json`:
-   ```json
-   { "file": "storia-di-galaxia.json", "title": "Storia di Galaxia", "author": "Fru" }
-   ```
+2. Trascina il file in `data/archivio/`, con il nome che ha già. Puoi
+   caricarne più di uno alla volta.
+
+Titolo e autore mostrati nell'elenco vengono letti dal contenuto del file
+stesso — non c'è nient'altro da scrivere.
 
 ## Aggiornare gli avvisi
 
-Modifica `data/avvisi.json`, un array di oggetti:
+Ogni avviso è un file `.json` a sé in `data/avvisi/` (il nome del file non
+conta, usalo solo per riconoscerlo tu):
 
 ```json
 { "title": "Titolo", "date": "2026-08-25", "body": "Testo dell'avviso.", "pinned": true }
 ```
 
 `pinned: true` lo mostra in cima; `date` ordina i più recenti per primi.
+Per togliere un avviso, elimina il suo file da `data/avvisi/`.
+
+Le tre pagine interrogano `api.github.com` per sapere cosa c'è in ciascuna
+cartella: funziona a prescindere da dove ospiti il sito (passim.it, GitHub
+Pages, altro), perché parla sempre con GitHub, non con l'hosting. L'unico
+limite è quello standard dell'API pubblica di GitHub (60 richieste
+all'ora per visitatore anonimo) — ampiamente sufficiente per un sito con
+pochi visitatori come questo.
 
 ## Collegare il server
 
@@ -62,6 +71,7 @@ Quando il server Minecraft è pronto, modifica `data/server.json`:
 {
   "address": "play.galaxia.it",
   "type": "java",
+  "note": "Whitelist attiva: scrivi su Discord per essere aggiunto.",
   "links": [
     { "label": "Discord", "url": "https://discord.gg/..." },
     { "label": "Come accedere", "url": "https://..." }
@@ -73,7 +83,9 @@ La card "Server" in home chiama da sola l'API pubblica
 [mcsrvstat.us](https://api.mcsrvstat.us/) (nessuna chiave, nessun backend) e
 mostra online/offline, giocatori connessi, versione e MOTD. Con
 `"type": "bedrock"` interroga l'endpoint Bedrock invece di Java.
-`links` è libero: mettici Discord, una guida per l'accesso, whitelist, ecc.
+`note` è testo libero mostrato sotto lo stato (regole, whitelist, versione
+richiesta, quello che vuoi). `links` è altrettanto libero: Discord, una
+guida per l'accesso, whitelist, ecc.
 
 ## Codice riusato da Cube-Atlas
 

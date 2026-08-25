@@ -1,6 +1,12 @@
 /* Galaxia Live — stili specifici della dashboard, sopra il tema
  * Minecraft di Cube-Atlas (css/style.css + css/textures.css). */
 
+/* Il logo di Galaxia Live è un blocco di micelio, non l'erba di Cube-Atlas. */
+.logo .cube {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%236c5f74%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%23665a6d%22%2F%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237a6c82%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%224%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23584d5e%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237a6c82%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23584d5e%22%2F%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23584d5e%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%23584d5e%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%222%22%20height%3D%222%22%20fill%3D%22%237a6c82%22%2F%3E%3Crect%20x%3D%2213%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0a8d8%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e6bce0%22%2F%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0a8d8%22%2F%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e6bce0%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0a8d8%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23f2d8ee%22%2F%3E%3Crect%20x%3D%2211%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23f2d8ee%22%2F%3E%3C%2Fsvg%3E");
+  image-rendering: pixelated;
+}
+
 #app.galaxia { overflow-y: auto; }
 
 .galaxia-main {
@@ -75,6 +81,8 @@
   background: var(--slot-bg); border: 1px solid var(--border);
   padding: 3px 8px; font-size: 12px;
 }
+
+.server-note { color: var(--ink-dim); white-space: pre-wrap; margin: 10px 0 0; }
 
 .server-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .btn-link {
