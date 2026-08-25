@@ -34,6 +34,20 @@
         <button class="btn" id="btn-atlas-reload">↻ Ricarica elenco</button>
       </section>
 
+      <section class="panel hidden" id="map-tools-panel">
+        <h2>Cerca</h2>
+        <div class="hint">Nomi di vie, palazzi, stazioni e altri elementi disegnati.</div>
+        <input type="text" id="atlas-search" placeholder="Cerca un elemento…">
+        <ul class="doc-list hidden" id="atlas-search-results"></ul>
+
+        <h2 class="section-gap">Vai a coordinate</h2>
+        <div class="coord-row">
+          <input type="number" id="goto-x" placeholder="X">
+          <input type="number" id="goto-z" placeholder="Z">
+          <button class="btn" id="btn-goto">Vai</button>
+        </div>
+      </section>
+
       <section class="panel hidden" id="map-layers-panel">
         <h2>Layer</h2>
         <div class="hint">Nascondi o mostra i layer di questa mappa.</div>

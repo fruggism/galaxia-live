@@ -37,6 +37,12 @@ menu è il nome del file (tolti `.json`/`.camap.json` e un eventuale
 Finché `data/atlante/` è vuota, la pagina mostra semplicemente "nessun
 atlante ancora".
 
+Nella pagina Atlante c'è anche una **ricerca** (nomi di vie, palazzi,
+stazioni e altri elementi disegnati — clicca un risultato per centrarci
+la mappa e aprirne il popup, riaccendendo il layer se era nascosto) e un
+**vai a coordinate** (X/Z, come la bussola dell'Editor). Se la mappa ha un
+layer chiamato esattamente "Province", parte come unico visibile.
+
 ## Aggiornare l'archivio
 
 1. Nell'Archivio di Cube-Atlas, **📖 Esporta per il Lettore** sul documento

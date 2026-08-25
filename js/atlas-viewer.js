@@ -18,11 +18,25 @@ const ATLAS_FOLDER = 'data/atlante';
 let map = null;
 let layers = [];
 const layerGroups = new Map();
+let searchIndex = []; // [{ name, layerName, latlng, marker }] — ricostruito a ogni renderLayers()
+
+/** Centro approssimato di un elemento, per centrare la mappa quando lo si
+ *  trova con la ricerca: un punto usa la sua coordinata, una linea o
+ *  un'area la media dei suoi vertici. */
+function centroidOf(coordsOrCoord) {
+  if (coordsOrCoord.length === 2 && typeof coordsOrCoord[0] === 'number') {
+    return toLatLng(coordsOrCoord[0], coordsOrCoord[1]);
+  }
+  const n = coordsOrCoord.length;
+  const sum = coordsOrCoord.reduce((acc, [x, z]) => [acc[0] + x, acc[1] + z], [0, 0]);
+  return toLatLng(sum[0] / n, sum[1] / n);
+}
 
 function showEmpty(message) {
   el('map-empty').classList.remove('hidden');
   el('map-view').classList.add('hidden');
   el('map-layers-panel').classList.add('hidden');
+  el('map-tools-panel').classList.add('hidden');
   if (message) el('map-empty-msg').textContent = message;
 }
 
@@ -30,6 +44,7 @@ function showMap() {
   el('map-empty').classList.add('hidden');
   el('map-view').classList.remove('hidden');
   el('map-layers-panel').classList.remove('hidden');
+  el('map-tools-panel').classList.remove('hidden');
 }
 
 function initMap() {
@@ -113,6 +128,14 @@ function buildFeature(feature, layer) {
   primary.bindPopup(Atlas.popupHtml(feature, layer), { closeButton: false, autoPan: false, className: 'ca-info-popup' });
   primary.on('mouseover', () => primary.openPopup());
   primary.on('mouseout', () => primary.closePopup());
+
+  if (feature.name) {
+    const latlng = layer.type === 'areas' || layer.type === 'roads' || layer.type === 'transit'
+      ? centroidOf(feature.coords)
+      : centroidOf(feature.coord);
+    searchIndex.push({ name: feature.name, layerName: layer.name, layerId: layer.id, latlng, marker: primary });
+  }
+
   return group;
 }
 
@@ -140,12 +163,18 @@ function buildStation(station, layer) {
     </div>`, { closeButton: false, autoPan: false, className: 'ca-info-popup' });
   marker.on('mouseover', () => marker.openPopup());
   marker.on('mouseout', () => marker.closePopup());
+
+  if (station.name) {
+    searchIndex.push({ name: station.name, layerName: layer.name, layerId: layer.id, latlng: toLatLng(station.x, station.z), marker });
+  }
+
   return marker;
 }
 
 function renderLayers() {
   for (const g of layerGroups.values()) map.removeLayer(g);
   layerGroups.clear();
+  searchIndex = [];
   for (const layer of layers) {
     const group = L.layerGroup();
     for (const feature of layer.features || []) group.addLayer(buildFeature(feature, layer));
@@ -290,8 +319,61 @@ async function load() {
   }
 }
 
+// ------------------------------------------------------------ 🧭 bussola
+function goToCoords(x, z) {
+  if (!map) return;
+  map.setView(toLatLng(x, z), Math.max(map.getZoom(), 1), { animate: true });
+}
+
+// -------------------------------------------------------------- 🔍 cerca
+function renderSearchResults(query) {
+  const host = el('atlas-search-results');
+  if (!host) return;
+  const q = query.trim().toLowerCase();
+  if (!q) { host.innerHTML = ''; host.classList.add('hidden'); return; }
+  const matches = searchIndex
+    .filter((r) => r.name.toLowerCase().includes(q))
+    .slice(0, 20);
+  host.classList.remove('hidden');
+  if (!matches.length) {
+    host.innerHTML = '<li class="hint">Nessun elemento trovato.</li>';
+    return;
+  }
+  host.innerHTML = matches.map((r, i) => `
+    <li class="doc-item" data-index="${i}">
+      <b>${escapeHtml(r.name)}</b>
+      <small>${escapeHtml(r.layerName)}</small>
+    </li>`).join('');
+  host.querySelectorAll('.doc-item').forEach((node) => {
+    node.addEventListener('click', () => goToSearchResult(matches[Number(node.dataset.index)]));
+  });
+}
+
+function goToSearchResult(result) {
+  const layer = layers.find((l) => l.id === result.layerId);
+  if (layer && layer.visible === false) {
+    layer.visible = true;
+    applyVisibility();
+    renderLayerList();
+  }
+  map.setView(result.latlng, Math.max(map.getZoom(), 2), { animate: true });
+  setTimeout(() => result.marker.openPopup(), 300);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   showEmpty();
   load();
   el('btn-atlas-reload').addEventListener('click', load);
+
+  const goto = () => {
+    const x = Number(el('goto-x').value);
+    const z = Number(el('goto-z').value);
+    if (Number.isFinite(x) && Number.isFinite(z)) goToCoords(x, z);
+  };
+  el('btn-goto').addEventListener('click', goto);
+  for (const id of ['goto-x', 'goto-z']) {
+    el(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') goto(); });
+  }
+
+  el('atlas-search').addEventListener('input', (e) => renderSearchResults(e.target.value));
 });
