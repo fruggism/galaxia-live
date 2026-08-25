@@ -151,6 +151,22 @@
 #atlas-search-results { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); }
 #atlas-search-results .doc-item { padding: 6px 8px; }
 
+#transit-summary { max-height: 400px; overflow-y: auto; }
+.transit-line-block { margin-bottom: 14px; }
+.transit-line-block:last-child { margin-bottom: 0; }
+.transit-line-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.transit-stops { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--border); }
+.transit-stops li {
+  padding: 4px 0 4px 10px; cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.transit-stops li:hover { background: var(--slot-bg); }
+.transit-stops li.hint { cursor: default; }
+.transit-stops li.hint:hover { background: none; }
+.transit-stops .stop-name { flex: 1; }
+.interchange-dots { display: flex; gap: 3px; flex: none; }
+.interchange-dots .line-chip { margin: 0; cursor: help; }
+
 footer.galaxia-foot {
   text-align: center; color: var(--ink-faint); font-size: 12px; padding: 16px;
 }

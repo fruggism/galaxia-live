@@ -43,6 +43,11 @@ la mappa e aprirne il popup, riaccendendo il layer se era nascosto) e un
 **vai a coordinate** (X/Z, come la bussola dell'Editor). Se la mappa ha un
 layer chiamato esattamente "Province", parte come unico visibile.
 
+Cliccando il nome di un layer di tipo trasporto pubblico compare la
+**sintesi linee**: ogni linea con le sue fermate in ordine, un pallino
+colorato per ogni linea con cui una fermata fa interscambio (passaci
+sopra per il nome), e un clic su una fermata la apre sulla mappa.
+
 ## Aggiornare l'archivio
 
 1. Nell'Archivio di Cube-Atlas, **📖 Esporta per il Lettore** sul documento

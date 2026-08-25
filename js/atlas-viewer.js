@@ -19,6 +19,8 @@ let map = null;
 let layers = [];
 const layerGroups = new Map();
 let searchIndex = []; // [{ name, layerName, latlng, marker }] — ricostruito a ogni renderLayers()
+const stationMarkers = new Map(); // "layerId:stationId" -> marker, per la sintesi linee
+let selectedTransitLayerId = null;
 
 /** Centro approssimato di un elemento, per centrare la mappa quando lo si
  *  trova con la ricerca: un punto usa la sua coordinata, una linea o
@@ -38,6 +40,7 @@ function showEmpty(message) {
   el('map-layers-panel').classList.add('hidden');
   el('map-search-panel').classList.add('hidden');
   el('map-goto-panel').classList.add('hidden');
+  el('map-transit-panel').classList.add('hidden');
   if (message) el('map-empty-msg').textContent = message;
 }
 
@@ -72,6 +75,11 @@ function layerVisible(layer) {
     cur = cur.parentId ? layers.find((l) => l.id === cur.parentId) : null;
   }
   return true;
+}
+
+/** Le linee (elementi transit) che fermano in una stazione. */
+function linesAtStation(station, layer) {
+  return (layer.features || []).filter((f) => (f.stationIds || []).includes(station.id));
 }
 
 function buildFeature(feature, layer) {
@@ -155,17 +163,20 @@ function buildStation(station, layer) {
       permanent: true, direction: 'right', offset: [size / 2 + 2, 0], className: 'ca-label', sticky: false,
     });
   }
-  const lines = (layer.features || [])
-    .filter((f) => (f.stationIds || []).includes(station.id))
-    .map((f) => f.name || '(senza nome)');
+  const lines = linesAtStation(station, layer);
+  const lineChips = lines.map((f) => (
+    `<span class="line-chip" style="background:${Atlas.styleOf(f, layer).color || '#4fa3d1'}"></span>${escapeHtml(f.name || '(senza nome)')}`
+  )).join('<br>');
   marker.bindPopup(`<div class="ca-popup">
       <h4>${escapeHtml(station.name || '(stazione)')}</h4>
       ${station.description ? `<p class="desc">${escapeHtml(station.description)}</p>` : ''}
-      <div class="meta">Stazione · ${lines.length ? escapeHtml(lines.join(', ')) : 'nessuna linea collegata'}</div>
+      <div class="meta">Stazione${lines.length ? '' : ' · nessuna linea collegata'}</div>
+      ${lineChips ? `<div class="line-chip-list">${lineChips}</div>` : ''}
     </div>`, { closeButton: false, autoPan: false, className: 'ca-info-popup' });
   marker.on('mouseover', () => marker.openPopup());
   marker.on('mouseout', () => marker.closePopup());
 
+  stationMarkers.set(`${layer.id}:${station.id}`, marker);
   if (station.name) {
     searchIndex.push({ name: station.name, layerName: layer.name, layerId: layer.id, latlng: toLatLng(station.x, station.z), marker });
   }
@@ -177,6 +188,7 @@ function renderLayers() {
   for (const g of layerGroups.values()) map.removeLayer(g);
   layerGroups.clear();
   searchIndex = [];
+  stationMarkers.clear();
   for (const layer of layers) {
     const group = L.layerGroup();
     for (const feature of layer.features || []) group.addLayer(buildFeature(feature, layer));
@@ -217,7 +229,7 @@ function renderLayerList() {
   for (const l of layers) if (!seen.has(l.id)) order.push({ layer: l, depth: 0 });
 
   host.innerHTML = order.map(({ layer, depth }) => `
-    <li class="layer-item" data-id="${layer.id}" style="padding-left:${7 + depth * 16}px">
+    <li class="layer-item ${layer.id === selectedTransitLayerId ? 'selected' : ''}" data-id="${layer.id}" style="padding-left:${7 + depth * 16}px">
       <span class="eye ${layer.visible === false ? 'off' : ''}" data-eye="${layer.id}" title="Mostra/nascondi">👁</span>
       <span class="kind" title="${layer.type}">${LAYER_ICONS[layer.type] || '•'}</span>
       <span class="lname">${escapeHtml(layer.name)}</span>
@@ -233,6 +245,68 @@ function renderLayerList() {
       renderLayerList();
     });
   });
+
+  host.querySelectorAll('.layer-item').forEach((node) => {
+    node.addEventListener('click', (e) => {
+      if (e.target.closest('.eye')) return;
+      const layer = layers.find((l) => l.id === node.dataset.id);
+      if (layer && layer.type === 'transit') {
+        selectedTransitLayerId = layer.id;
+        renderLayerList();
+        showTransitSummary(layer);
+      }
+    });
+  });
+}
+
+// -------------------------------------------------------- sintesi linee
+function showTransitSummary(layer) {
+  const host = el('transit-summary');
+  const lines = layer.features || [];
+  el('map-transit-panel').classList.remove('hidden');
+
+  if (!lines.length) {
+    host.innerHTML = '<p class="hint">Nessuna linea in questo layer.</p>';
+    return;
+  }
+
+  host.innerHTML = lines.map((f) => {
+    const color = Atlas.styleOf(f, layer).color || '#4fa3d1';
+    const stations = Atlas.orderedStationsForLine(f, layer);
+    const stopsHtml = stations.length
+      ? stations.map((s) => {
+        const others = linesAtStation(s, layer).filter((o) => o.id !== f.id);
+        const dots = others.map((o) => (
+          `<span class="line-chip" style="background:${escapeHtml(Atlas.styleOf(o, layer).color || '#4fa3d1')}" title="${escapeHtml(o.name || '(senza nome)')}"></span>`
+        )).join('');
+        return `<li data-layer="${layer.id}" data-station="${s.id}">
+            <span class="stop-name">${escapeHtml(s.name || '(senza nome)')}</span>
+            ${dots ? `<span class="interchange-dots">${dots}</span>` : ''}
+          </li>`;
+      }).join('')
+      : '<li class="hint">Nessuna stazione collegata</li>';
+    return `<div class="transit-line-block">
+        <div class="transit-line-head"><span class="line-chip" style="background:${escapeHtml(color)}"></span><b>${escapeHtml(f.name || '(senza nome)')}</b></div>
+        <ol class="transit-stops">${stopsHtml}</ol>
+      </div>`;
+  }).join('');
+
+  host.querySelectorAll('.transit-stops li[data-station]').forEach((node) => {
+    node.addEventListener('click', () => goToStation(node.dataset.layer, node.dataset.station));
+  });
+}
+
+function goToStation(layerId, stationId) {
+  const marker = stationMarkers.get(`${layerId}:${stationId}`);
+  if (!marker || !map) return;
+  const layer = layers.find((l) => l.id === layerId);
+  if (layer && layer.visible === false) {
+    layer.visible = true;
+    applyVisibility();
+    renderLayerList();
+  }
+  map.setView(marker.getLatLng(), Math.max(map.getZoom(), 2), { animate: true });
+  setTimeout(() => marker.openPopup(), 300);
 }
 
 /** Se la mappa ha un layer "Province", parte visibile solo quello: gli
@@ -248,6 +322,8 @@ function openBundle(raw) {
   const m = initMap();
   layers = Array.isArray(raw.layers) ? raw.layers : [];
   applyDefaultVisibility();
+  selectedTransitLayerId = null;
+  el('map-transit-panel').classList.add('hidden');
   showMap();
   setTimeout(() => m.invalidateSize(), 30);
 
