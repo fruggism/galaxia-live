@@ -7,6 +7,17 @@
   image-rendering: pixelated;
 }
 
+/* Icone Minecraft (piccone dorato, libro, mappa, falò, command block) al
+ * posto delle emoji, vendorizzate come pixel art in vendor/icons/. */
+.icon-item {
+  width: 18px; height: 18px;
+  image-rendering: pixelated;
+  vertical-align: -4px;
+  margin-right: 4px;
+}
+.card h2 .icon-item, .nav-card .icon-item { margin-right: 0; }
+.nav-card .icon-item { width: 30px; height: 30px; vertical-align: 0; }
+
 #app.galaxia { overflow-y: auto; }
 
 .galaxia-main {

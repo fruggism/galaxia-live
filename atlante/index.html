@@ -17,9 +17,9 @@
   <header id="topbar">
     <div class="logo"><span class="cube"></span><span>GALAXIA<b>-LIVE</b></span></div>
     <nav class="tabs">
-      <a class="tab" href="../index.html">🏠 Home</a>
-      <a class="tab active" href="index.html">🗺️ Atlante</a>
-      <a class="tab" href="../archivio/index.html">📖 Archivio</a>
+      <a class="tab" href="../index.html"><img class="icon-item" src="../vendor/icons/campfire.svg" alt="">Home</a>
+      <a class="tab active" href="index.html"><img class="icon-item" src="../vendor/icons/map.svg" alt="">Atlante</a>
+      <a class="tab" href="../archivio/index.html"><img class="icon-item" src="../vendor/icons/book.svg" alt="">Archivio</a>
     </nav>
     <div class="topbar-spacer"></div>
     <div class="topbar-info" id="atlas-status"></div>
@@ -28,9 +28,8 @@
   <div class="screen active" id="screen-atlas">
     <aside class="sidebar">
       <section class="panel">
-        <h2>Atlanti</h2>
-        <div class="hint">Uno per file in <code>data/atlante/</code> — trascinane quanti ne vuoi,
-          il nome del file è il nome qui sotto. Clicca per aprirne uno.</div>
+        <h2>Atlante</h2>
+        <div class="hint" id="current-atlas-label">Caricamento…</div>
         <ul class="doc-list" id="atlas-list"></ul>
         <button class="btn" id="btn-atlas-reload">↻ Ricarica elenco</button>
       </section>

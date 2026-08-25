@@ -204,9 +204,19 @@ function renderLayerList() {
   });
 }
 
+/** Se la mappa ha un layer "Province", parte visibile solo quello: gli
+ *  altri (strade, punti, trasporti…) restano lì, un clic sull'occhio
+ *  li riaccende quando servono. */
+function applyDefaultVisibility() {
+  const hasProvince = layers.some((l) => (l.name || '').trim().toLowerCase() === 'province');
+  if (!hasProvince) return;
+  for (const l of layers) l.visible = (l.name || '').trim().toLowerCase() === 'province';
+}
+
 function openBundle(raw) {
   const m = initMap();
   layers = Array.isArray(raw.layers) ? raw.layers : [];
+  applyDefaultVisibility();
   showMap();
   setTimeout(() => m.invalidateSize(), 30);
 
@@ -250,13 +260,15 @@ async function openAtlas(name) {
   if (!file) return;
   selectedName = name;
   renderAtlasList();
+  const label = labelFromFilename(file.name);
+  if (el('current-atlas-label')) el('current-atlas-label').textContent = label;
   try {
     const raw = await fetchJson(file.download_url);
     if (!raw || raw.format !== READER_MAP_FORMAT) {
       throw new Error(`"${file.name}" non è un atlante Cube-Atlas valido`);
     }
     openBundle(raw);
-    setStatus('atlas-status', `"${labelFromFilename(file.name)}" — aggiornato al ${new Date().toLocaleString('it-IT')}`, 'ok');
+    setStatus('atlas-status', `"${label}" — aggiornato al ${new Date().toLocaleString('it-IT')}`, 'ok');
   } catch (err) {
     showEmpty(`Caricamento non riuscito: ${err.message}`);
     setStatus('atlas-status', `Caricamento non riuscito: ${err.message}`, 'err');
