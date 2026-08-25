@@ -36,7 +36,8 @@ function showEmpty(message) {
   el('map-empty').classList.remove('hidden');
   el('map-view').classList.add('hidden');
   el('map-layers-panel').classList.add('hidden');
-  el('map-tools-panel').classList.add('hidden');
+  el('map-search-panel').classList.add('hidden');
+  el('map-goto-panel').classList.add('hidden');
   if (message) el('map-empty-msg').textContent = message;
 }
 
@@ -44,7 +45,8 @@ function showMap() {
   el('map-empty').classList.add('hidden');
   el('map-view').classList.remove('hidden');
   el('map-layers-panel').classList.remove('hidden');
-  el('map-tools-panel').classList.remove('hidden');
+  el('map-search-panel').classList.remove('hidden');
+  el('map-goto-panel').classList.remove('hidden');
 }
 
 function initMap() {

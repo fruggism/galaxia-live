@@ -147,13 +147,9 @@
 .hint { color: var(--ink-faint); font-size: 12px; }
 
 /* ------------------------------------------------------- atlante: strumenti */
-#map-tools-panel .section-gap { margin-top: 16px; }
-#map-tools-panel #atlas-search { width: 100%; margin: 8px 0; }
+#atlas-search { width: 100%; margin: 8px 0; }
 #atlas-search-results { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); }
 #atlas-search-results .doc-item { padding: 6px 8px; }
-.coord-row { display: flex; gap: 6px; margin-top: 8px; }
-.coord-row input { width: 0; flex: 1; }
-.coord-row .btn { flex: none; }
 
 footer.galaxia-foot {
   text-align: center; color: var(--ink-faint); font-size: 12px; padding: 16px;
